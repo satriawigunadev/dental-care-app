@@ -1,0 +1,13 @@
+# Mengabaikan folder library/dependencies
+node_modules/
+
+# Mengabaikan file konfigurasi rahasia
+.env
+
+# Mengabaikan log error
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Mengabaikan folder hasil build jika ada nanti
+dist/

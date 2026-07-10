@@ -1,0 +1,83 @@
+const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
+const userModel = require('../models/userModel');
+
+/**
+ * Logika utama Autentikasi Login User
+ */
+const login = async (req, res) => {
+    const { email, password } = req.body;
+
+    // 1. Validasi Input Dasar
+    if (!email || !password) {
+        return res.status(400).json({ message: 'Email dan password wajib diisi.' });
+    }
+
+    try {
+        // 2. Cari user berdasarkan email melalui Model
+        const user = await userModel.findUserByEmail(email);
+        
+        // Pilar Keamanan: Jangan beri tahu secara spesifik apakah "email" atau "password" yang salah
+        // untuk mempersulit hacker menebak akun yang valid (Username Enumeration Attack).
+        if (!user) {
+            return res.status(401).json({ message: 'Email atau password salah.' });
+        }
+
+        // 3. Bandingkan password input dengan hash password di database memakai bcrypt
+        const isPasswordValid = await bcrypt.compare(password, user.password);
+        if (!isPasswordValid) {
+            return res.status(401).json({ message: 'Email atau password salah.' });
+        }
+
+        // 4. Buat token JWT (Pilar Otorisasi: masukkan ID dan ROLE ke payload)
+        const tokenPayload = {
+            id: user.id,
+            role: user.role
+        };
+
+        const token = jwt.sign(tokenPayload, process.env.JWT_SECRET, {
+            expiresIn: '1h' // Token hangus dalam 1 jam demi keamanan
+        });
+
+        // 5. Kunci token di dalam HTTP-Only Cookie (Pilar Keamanan Data)
+        res.cookie('token', token, {
+            httpOnly: true, // Mencegah JavaScript front-end (XSS) membaca token ini
+            secure: process.env.NODE_ENV === 'production', // true jika sudah pakai HTTPS
+            sameSite: 'strict', // Mencegah serangan CSRF Cross-Site Request Forgery
+            maxAge: 60 * 60 * 1000 // Durasi cookie sama dengan token JWT (1 jam dalam milidetik)
+        });
+
+        // 6. Kirim respon sukses dan data user non-sensitif ke front-end
+        return res.status(200).json({
+            message: 'Login berhasil.',
+            user: {
+                id: user.id,
+                nama: user.nama,
+                role: user.role // Beri tahu React rolenya apa (admin/dokter/pasien) untuk routing UI
+            }
+        });
+
+    } catch (error) {
+        console.error('❌ Error pada proses login:', error);
+        return res.status(500).json({ message: 'Terjadi kesalahan internal server.' });
+    }
+};
+
+/**
+ * Logika Logout untuk membersihkan cookie token
+ */
+const logout = (req, res) => {
+    // Hapus cookie token dengan masa berlaku instan (0)
+    res.clearCookie('token', {
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'strict'
+    });
+    
+    return res.status(200).json({ message: 'Logout berhasil.' });
+};
+
+module.exports = {
+    login,
+    logout
+};
