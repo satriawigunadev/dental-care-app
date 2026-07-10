@@ -16,6 +16,19 @@ const findUserByEmail = async (email) => {
     return result.rows.length > 0 ? result.rows[0] : null;
 };
 
+/**
+ * Mencari user di database berdasarkan ID.
+ * @param {number} id - ID user.
+ * @returns {object|null} Data user atau null jika tidak ditemukan.
+ */
+const findUserById = async (id) => {
+    const query = 'SELECT id, nama, email, role FROM users WHERE id = $1';
+    const values = [id];
+    const result = await pool.query(query, values);
+    return result.rows.length > 0 ? result.rows[0] : null;
+};
+
 module.exports = {
-    findUserByEmail
+    findUserByEmail,
+    findUserById
 };

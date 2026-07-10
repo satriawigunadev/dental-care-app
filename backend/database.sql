@@ -28,7 +28,7 @@ INSERT INTO users (nama, email, password, role)
 VALUES (
     'Siti Admin Klinik', 
     'admin@dental.com', 
-    '$2b$10$X7mH26N0R36T7eGv3y2fO.rI7Q9EwZp4D1tX.S9b9W9V9e9f9g9hG', -- hash dari 'password123'
+    '$2b$10$.QXXr.7ahKEXSO3NCU7P2ebLytD/VMlqpFwtglqXz31HxKhvCOOgK', -- hash dari 'password123'
     'admin'
 );
 
@@ -37,7 +37,7 @@ INSERT INTO users (nama, email, password, role)
 VALUES (
     'drg. Budi Dermawan', 
     'budi@dental.com', 
-    '$2b$10$X7mH26N0R36T7eGv3y2fO.rI7Q9EwZp4D1tX.S9b9W9V9e9f9g9hG', -- hash dari 'password123'
+    '$2b$10$.QXXr.7ahKEXSO3NCU7P2ebLytD/VMlqpFwtglqXz31HxKhvCOOgK', -- hash dari 'password123'
     'dokter'
 );
 
@@ -46,6 +46,6 @@ INSERT INTO users (nama, email, password, role)
 VALUES (
     'Ahmad Pasien', 
     'ahmad@gmail.com', 
-    '$2b$10$X7mH26N0R36T7eGv3y2fO.rI7Q9EwZp4D1tX.S9b9W9V9e9f9g9hG', -- hash dari 'password123'
+    '$2b$10$.QXXr.7ahKEXSO3NCU7P2ebLytD/VMlqpFwtglqXz31HxKhvCOOgK', -- hash dari 'password123'
     'pasien'
 );

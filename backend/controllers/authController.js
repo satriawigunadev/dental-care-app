@@ -77,7 +77,29 @@ const logout = (req, res) => {
     return res.status(200).json({ message: 'Logout berhasil.' });
 };
 
+/**
+ * Memverifikasi session aktif berdasarkan HTTP-only cookie token JWT
+ */
+const verifySession = async (req, res) => {
+    const token = req.cookies.token;
+    if (!token) {
+        return res.status(401).json({ message: 'Tidak ada session aktif.' });
+    }
+
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await userModel.findUserById(decoded.id);
+        if (!user) {
+            return res.status(404).json({ message: 'User tidak ditemukan.' });
+        }
+        return res.status(200).json({ user });
+    } catch (error) {
+        return res.status(401).json({ message: 'Sesi tidak valid atau kedaluwarsa.' });
+    }
+};
+
 module.exports = {
     login,
-    logout
+    logout,
+    verifySession
 };
